@@ -15,4 +15,3 @@ data =np.array(
 split_data_by_element_value(data)
     
 # %%
-data.

@@ -5,69 +5,7 @@ from .recom_ncf_base import NCFBase
 
 class NeuMF(NCFBase):
     """Neural Matrix Factorization.
-
-    Parameters
-    ----------
-    num_factors: int, optional, default: 8
-        Embedding size of MF model.
-
-    layers: list, optional, default: [64, 32, 16, 8]
-        MLP layers. Note that the first layer is the concatenation of
-        user and item embeddings. So layers[0]/2 is the embedding size.
-
-    act_fn: str, default: 'relu'
-        Name of the activation function used for the MLP layers.
-        Supported functions: ['sigmoid', 'tanh', 'elu', 'relu', 'selu, 'relu6', 'leaky_relu']
-
-    reg_mf: float, optional, default: 0.
-        Regularization for MF embeddings.
-
-    reg_layers: list, optional, default: [0., 0., 0., 0.]
-        Regularization for each MLP layer,
-        reg_layers[0] is the regularization for embeddings.
-
-    num_epochs: int, optional, default: 20
-        Number of epochs.
-
-    batch_size: int, optional, default: 256
-        Batch size.
-
-    num_neg: int, optional, default: 4
-        Number of negative instances to pair with a positive instance.
-
-    lr: float, optional, default: 0.001
-        Learning rate.
-
-    learner: str, optional, default: 'adam'
-        Specify an optimizer: adagrad, adam, rmsprop, sgd
-
-    early_stopping: {min_delta: float, patience: int}, optional, default: None
-        If `None`, no early stopping. Meaning of the arguments: 
-        
-        - `min_delta`: the minimum increase in monitored value on validation set to be considered as improvement, \
-           i.e. an increment of less than min_delta will count as no improvement.
-        
-        - `patience`: number of epochs with no improvement after which training should be stopped.
-
-    name: string, optional, default: 'NeuMF'
-        Name of the recommender model.
-
-    trainable: boolean, optional, default: True
-        When False, the model is not trained and Cornac assumes that the model is already \
-        pre-trained.
-
-    verbose: boolean, optional, default: False
-        When True, some running logs are displayed.
-
-    seed: int, optional, default: None
-        Random seed for parameters initialization.
-
-    References
-    ----------
-    * He, X., Liao, L., Zhang, H., Nie, L., Hu, X., & Chua, T. S. (2017, April). Neural collaborative filtering. \
-    In Proceedings of the 26th international conference on world wide web (pp. 173-182).
     """
-
     def __init__(
         self,
         name="NeuMF",
@@ -80,12 +18,11 @@ class NeuMF(NCFBase):
         batch_size=256,
         num_neg=4,
         lr=0.001,
-        learner="adam",
-        early_stopping=None,
+        learner="adam",        
         trainable=True,
         verbose=True,
         seed=None,
-    ):
+    ):        
         super().__init__(
             name=name,
             trainable=trainable,
@@ -95,9 +32,9 @@ class NeuMF(NCFBase):
             num_neg=num_neg,
             lr=lr,
             learner=learner,
-            early_stopping=early_stopping,
             seed=seed,
         )
+        import tensorflow.compat.v1 as tf
         self.num_factors = num_factors
         self.layers = layers
         self.act_fn = act_fn
@@ -116,18 +53,6 @@ class NeuMF(NCFBase):
 
     def pretrain(self, gmf_model, mlp_model, alpha=0.5):
         """Provide pre-trained GMF and MLP models. Section 3.4.1 of the paper.
-
-        Parameters
-        ----------
-        gmf_model: object of type GMF, required
-            Reference to trained/fitted GMF model.
-
-        gmf_model: object of type GMF, required
-            Reference to trained/fitted GMF model.
-
-        alpha: float, optional, default: 0.5
-            Hyper-parameter determining the trade-off between the two pre-trained models.
-            Details are described in the section 3.4.1 of the paper.
         """
         self.pretrained = True
         self.gmf_model = gmf_model
@@ -136,7 +61,7 @@ class NeuMF(NCFBase):
         return self
 
     def _build_graph(self):
-        import tensorflow.compat.v1 as tf
+        
         from .ops import gmf, mlp, loss_fn, train_fn
 
         super()._build_graph()
@@ -242,20 +167,6 @@ class NeuMF(NCFBase):
 
     def score(self, user_idx, item_idx=None):
         """Predict the scores/ratings of a user for an item.
-
-        Parameters
-        ----------
-        user_idx: int, required
-            The index of the user for whom to perform score prediction.
-
-        item_idx: int, optional, default: None
-            The index of the item for which to perform score prediction.
-            If None, scores for all known items will be returned.
-
-        Returns
-        -------
-        res : A scalar or a Numpy array
-            Relative scores that the user gives to the item or to all known items
         """
         if item_idx is None:
             if self.train_set.is_unknown_user(user_idx):

@@ -1,16 +1,9 @@
-import sys
-sys.path.append('./')
-sys.path.append('../')
-sys.path.append('../../')
-from cornac.datasets import amazon_clothing
-from cornac.data import Reader
-
 import recs
 from recs.utils.common import predict_ranking
 import pandas as pd
 
-# Load data by cornac, with shape [total_trans_num, 3]
-data = amazon_clothing.load_feedback(reader=Reader(bin_threshold=1.0))
+data = "DATA放這裡"
+
 
 train_set = recs.datasets.Dataset.from_uir(data, seed=41)
 
@@ -32,7 +25,5 @@ vaecf.fit(train_set)
 
 df = pd.DataFrame(columns=['userId', 'itemId', 'rank'], data=data)
 pred = predict_ranking(vaecf, df, 'userId', 'itemId', 'rank', True)
-
-
 
 print(pred)

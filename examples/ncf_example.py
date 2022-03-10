@@ -1,18 +1,9 @@
-import sys
-sys.path.append('./')
-sys.path.append('../')
-sys.path.append('../../')
-
-from cornac.datasets import amazon_clothing
-from cornac.data import Reader
-
 import pandas as pd
 import recs
 
 
 from recs.utils import predict_ranking
-
-data = amazon_clothing.load_feedback(reader=Reader(bin_threshold=1.0))
+data = "DATA放這裡"
 train_set = recs.datasets.Dataset.from_uir(data, seed=41)
 
 

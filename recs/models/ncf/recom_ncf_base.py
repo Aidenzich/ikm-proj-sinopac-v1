@@ -2,54 +2,13 @@
 import os
 import copy
 from tqdm.auto import trange
-
 from ..base import Base
 from ...utils import get_random_state
 
 
 class NCFBase(Base):
-    """Base class of NCF family.
-
-    Parameters
-    ----------
-    num_epochs: int, optional, default: 20
-        Number of epochs.
-
-    batch_size: int, optional, default: 256
-        Batch size.
-
-    num_neg: int, optional, default: 4
-        Number of negative instances to pair with a positive instance.
-
-    lr: float, optional, default: 0.001
-        Learning rate.
-
-    learner: str, optional, default: 'adam'
-        Specify an optimizer: adagrad, adam, rmsprop, sgd
-
-    early_stopping: {min_delta: float, patience: int}, optional, default: None
-        If `None`, no early stopping. Meaning of the arguments: 
-        
-         - `min_delta`: the minimum increase in monitored value on validation set to be considered as improvement, \
-           i.e. an increment of less than min_delta will count as no improvement.
-         - `patience`: number of epochs with no improvement after which training should be stopped.
-
-    name: string, optional, default: 'NCF'
-        Name of the recommender model.
-
-    trainable: boolean, optional, default: True
-        When False, the model is not trained and Cornac assumes that the model is already \
-        pre-trained.
-
-    verbose: boolean, optional, default: False
-        When True, some running logs are displayed.
-
-    References
-    ----------
-    * He, X., Liao, L., Zhang, H., Nie, L., Hu, X., & Chua, T. S. (2017, April). Neural collaborative filtering. \
-    In Proceedings of the 26th international conference on world wide web (pp. 173-182).
+    """Base class of NCF.    
     """
-
     def __init__(
         self,
         name="NCF",
@@ -57,19 +16,18 @@ class NCFBase(Base):
         batch_size=256,
         num_neg=4,
         lr=0.001,
-        learner="adam",
-        early_stopping=None,
+        learner="adam",        
         trainable=True,
         verbose=True,
         seed=None,
     ):
         super().__init__(name=name, trainable=trainable, verbose=verbose)
+        import tensorflow.compat.v1 as tf
         self.num_epochs = num_epochs
         self.batch_size = batch_size
         self.num_neg = num_neg
         self.lr = lr
-        self.learner = learner
-        self.early_stopping = early_stopping
+        self.learner = learner    
         self.seed = seed
         self.random_state = get_random_state(seed)
         self.ignored_attrs.extend(
@@ -89,19 +47,7 @@ class NCFBase(Base):
         )
 
     def fit(self, train_set, val_set=None):
-        """Fit the model to observations.
-
-        Parameters
-        ----------
-        train_set: :obj:`cornac.data.Dataset`, required
-            User-Item preference data as well as additional modalities.
-
-        val_set: :obj:`cornac.data.Dataset`, optional, default: None
-            User-Item preference data for model selection purposes (e.g., early stopping).
-
-        Returns
-        -------
-        self : object
+        """Fit the model.
         """
         Base.fit(self, train_set, val_set)
 
@@ -115,7 +61,7 @@ class NCFBase(Base):
         return self
 
     def _build_graph(self):
-        import tensorflow.compat.v1 as tf
+
 
         # less verbose TF
         os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
@@ -124,7 +70,7 @@ class NCFBase(Base):
         self.graph = tf.Graph()
 
     def _sess_init(self):
-        import tensorflow.compat.v1 as tf
+        
 
         config = tf.ConfigProto()
         config.gpu_options.allow_growth = True
@@ -143,8 +89,6 @@ class NCFBase(Base):
         return _loss
 
     def _fit_tf(self):
-        import tensorflow.compat.v1 as tf
-
         loop = trange(self.num_epochs, disable=not self.verbose)
         for _ in loop:
             count = 0
@@ -160,20 +104,10 @@ class NCFBase(Base):
                 if i % 10 == 0:
                     loop.set_postfix(loss=(sum_loss / count))
 
-            if self.early_stopping is not None and self.early_stop(
-                **self.early_stopping
-            ):
-                break
         loop.close()
 
     def save(self, save_dir=None):
         """Save a recommender model to the filesystem.
-
-        Parameters
-        ----------
-        save_dir: str, default: None
-            Path to a directory for the model to be stored.
-
         """
         if save_dir is None:
             return
@@ -187,20 +121,6 @@ class NCFBase(Base):
     @staticmethod
     def load(model_path, trainable=False):
         """Load a recommender model from the filesystem.
-
-        Parameters
-        ----------
-        model_path: str, required
-            Path to a file or directory where the model is stored. If a directory is
-            provided, the latest model will be loaded.
-
-        trainable: boolean, optional, default: False
-            Set it to True if you would like to finetune the model. By default, 
-            the model parameters are assumed to be fixed after being loaded.
-        
-        Returns
-        -------
-        self : object
         """
         model = Base.load(model_path, trainable)
         if hasattr(model, "pretrained"):  # NeuMF
@@ -210,28 +130,3 @@ class NCFBase(Base):
         model.saver.restore(model.sess, model.load_from.replace(".pkl", ".cpt"))
 
         return model
-
-    def monitor_value(self):
-        """Calculating monitored value used for early stopping on validation set (`val_set`).
-        This function will be called by `early_stop()` function.
-
-        Returns
-        -------
-        res : float
-            Monitored value on validation set.
-            Return `None` if `val_set` is `None`.
-        """
-        if self.val_set is None:
-            return None
-
-        from ...metrics import NDCG
-        from ...eval_methods import ranking_eval
-
-        ndcg_100 = ranking_eval(
-            model=self,
-            metrics=[NDCG(k=100)],
-            train_set=self.train_set,
-            test_set=self.val_set,
-        )[0][0]
-
-        return ndcg_100

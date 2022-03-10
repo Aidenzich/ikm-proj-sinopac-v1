@@ -1,15 +1,16 @@
 import numpy as np
 import torch
 from ..base import Base
+from .vaecf import VAE, learn
+
 
 class VAECF(Base):
     """Variational Autoencoder for Collaborative Filtering.
-    Liang, Dawen, Rahul G. Krishnan, Matthew D. Hoffman, and Tony Jebara. "Variational autoencoders for collaborative filtering."
+        from: Liang, Dawen, Rahul G. Krishnan, Matthew D. Hoffman, and Tony Jebara. "Variational autoencoders for collaborative filtering."
     """
 
     def __init__(
-        self,
-        name="VAECF",
+        self, name="VAECF",
         k=10,
         autoencoder_structure=[20],
         act_fn="tanh",
@@ -36,24 +37,9 @@ class VAECF(Base):
         self.use_gpu = use_gpu
 
     def fit(self, train_set, val_set=None):
-        """Fit the model to observations.
-
-        Parameters
-        ----------
-        train_set: :obj:`cornac.data.Dataset`, required
-            User-Item preference data as well as additional modalities.
-
-        val_set: :obj:`cornac.data.Dataset`, optional, default: None
-            User-Item preference data for model selection purposes (e.g., early stopping).
-
-        Returns
-        -------
-        self : object
+        """Fit the model.
         """
         Base.fit(self, train_set, val_set)
-
-        
-        from .vaecf import VAE, learn
 
         self.device = (
             torch.device("cuda:0")
@@ -92,24 +78,8 @@ class VAECF(Base):
         return self
 
     def score(self, user_idx, item_idx=None):
-        """Predict the scores/ratings of a user for an item.
-
-        Parameters
-        ----------
-        user_idx: int, required
-            The index of the user for whom to perform score prediction.
-
-        item_idx: int, optional, default: None
-            The index of the item for which to perform score prediction.
-            If None, scores for all known items will be returned.
-
-        Returns
-        -------
-        res : A scalar or a Numpy array
-            Relative scores that the user gives to the item or to all known items
-
+        """Predict the ratings of a user for an item.
         """
-        import torch
 
         if item_idx is None:
             if self.train_set.is_unknown_user(user_idx):
@@ -141,6 +111,6 @@ class VAECF(Base):
             )
             user_pred = (
                 self.vae.decode(z_u).data.cpu().numpy().flatten()[item_idx]
-            )  # Fix me I am not efficient
-
+            )
+            
             return user_pred

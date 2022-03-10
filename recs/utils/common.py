@@ -12,30 +12,7 @@ def sigmoid(x):
     return 1.0 / (1.0 + np.exp(-x))
 
 def scale(values, target_min, target_max, source_min=None, source_max=None):
-    """Scale the value of a numpy array "values"
-    from source_min, source_max into a range [target_min, target_max]
-
-    Parameters
-    ----------
-    values : Numpy array, required
-        Values to be scaled.
-
-    target_min : scalar, required
-        Target minimum value.
-
-    target_max : scalar, required
-        Target maximum value.
-
-    source_min : scalar, required, default: None
-        Source minimum value if desired. If None, it will be the minimum of values.
-
-    source_max : scalar, required, default: None
-        Source minimum value if desired. If None, it will be the maximum of values.
-
-    Returns
-    -------
-    res: Numpy array
-        Output values mapped into range [target_min, target_max]
+    """Scale the value of a numpy array "values" from source_min, source_max into a range [target_min, target_max]
     """
     if source_min is None:
         source_min = np.min(values)
@@ -65,8 +42,6 @@ def get_random_state(seed):
 
 def estimate_number_batches(input_size, batch_size):
     """
-    az-need
-    
     Estimate number of batches give `input_size` and `batch_size`
     """
     return int(np.ceil(input_size / batch_size))

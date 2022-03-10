@@ -16,8 +16,7 @@ class Base:
         self.trainable = trainable
         self.verbose = verbose
         self.train_set = None
-        self.val_set = None
-        # attributes to be ignored when being saved
+        self.val_set = None        
         self.ignored_attrs = ["train_set", "val_set"]
 
     def reset_info(self):
@@ -153,41 +152,3 @@ class Base:
             item_rank = np.array(item_indices)[item_scores.argsort()[::-1]]
 
         return item_rank, item_scores
-
-    def monitor_value(self):
-        """Calculating monitored value used for early stopping on validation set (`val_set`).
-        This function will be called by `early_stop()` function.
-        """
-        raise NotImplementedError()
-
-    def early_stop(self, min_delta=0.0, patience=0):
-        """Check if training should be stopped when validation loss has stopped improving.
-        """
-        self.current_epoch += 1
-        current_value = self.monitor_value()
-        if current_value is None:
-            return False
-
-        if np.greater_equal(current_value - self.best_value, min_delta):
-            self.best_value = current_value
-            self.best_epoch = self.current_epoch
-            self.wait = 0
-        else:
-            self.wait += 1
-            if self.wait >= patience:
-                self.stopped_epoch = self.current_epoch
-
-        if self.stopped_epoch > 0:
-            print("Early stopping:")
-            print(
-                "- best epoch = {}, stopped epoch = {}".format(
-                    self.best_epoch, self.stopped_epoch
-                )
-            )
-            print(
-                "- best monitored value = {:.6f} (delta = {:.6f})".format(
-                    self.best_value, current_value - self.best_value
-                )
-            )
-            return True
-        return False

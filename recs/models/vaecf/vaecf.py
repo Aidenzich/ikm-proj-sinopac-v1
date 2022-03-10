@@ -3,10 +3,10 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from tqdm.auto import trange
+from ...utils.config import *
+
 
 torch.set_default_dtype(torch.float32)
-
-EPS = 1e-10
 
 ACT = {
     "sigmoid": nn.Sigmoid(),
@@ -16,15 +16,20 @@ ACT = {
     "relu6": nn.ReLU6(),
 }
 
-
 class VAE(nn.Module):
-    def __init__(self, z_dim, ae_structure, act_fn, likelihood):
+    def __init__(
+        self, 
+        z_dim, 
+        ae_structure, 
+        activation_function, 
+        likelihood
+    ):
         super(VAE, self).__init__()
 
         self.likelihood = likelihood
-        self.act_fn = ACT.get(act_fn, None)
-        if self.act_fn is None:
-            raise ValueError("Supported act_fn: {}".format(ACT.keys()))
+        self.activation_function = ACT.get(activation_function, None)
+        if self.activation_function is None:
+            raise ValueError("Supported activation_function: {}".format(ACT.keys()))
 
         # Encoder
         self.encoder = nn.Sequential()
@@ -32,7 +37,7 @@ class VAE(nn.Module):
             self.encoder.add_module(
                 "fc{}".format(i), nn.Linear(ae_structure[i], ae_structure[i + 1])
             )
-            self.encoder.add_module("act{}".format(i), self.act_fn)
+            self.encoder.add_module("act{}".format(i), self.activation_function)
         self.enc_mu = nn.Linear(ae_structure[-1], z_dim)  # mu
         self.enc_logvar = nn.Linear(ae_structure[-1], z_dim)  # logvar
 
@@ -44,7 +49,7 @@ class VAE(nn.Module):
                 "fc{}".format(i), nn.Linear(ae_structure[i], ae_structure[i + 1])
             )
             if i != len(ae_structure) - 2:
-                self.decoder.add_module("act{}".format(i), self.act_fn)
+                self.decoder.add_module("act{}".format(i), self.activation_function)
 
     def encode(self, x):
         h = self.encoder(x)
@@ -78,7 +83,7 @@ class VAE(nn.Module):
 
         ll = ll_choices.get(self.likelihood, None)
         if ll is None:
-            raise ValueError("Supported likelihoods: {}".format(ll_choices.keys()))
+            raise ValueError("Only supported likelihoods: {}".format(ll_choices.keys()))
 
         ll = torch.sum(ll, dim=1)
 
@@ -102,8 +107,6 @@ def learn(
     device=torch.device("cpu"),
 ):
     optimizer = torch.optim.Adam(params=vae.parameters(), lr=learn_rate)
-    # num_steps = estimate_number_batches(train_set.num_users, batch_size)
-
     progress_bar = trange(1, n_epochs + 1, disable=not verbose)
     for _ in progress_bar:
         sum_loss = 0.0
