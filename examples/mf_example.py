@@ -1,5 +1,4 @@
 from tqdm import tqdm
-
 import pandas as pd
 import __init__
 import recs
