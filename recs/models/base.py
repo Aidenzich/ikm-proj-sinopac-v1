@@ -7,11 +7,20 @@ from datetime import datetime
 import numpy as np
 from ..utils.common import clip 
 
-
-
 class Base:
 
     def __init__(self, name, trainable=True, verbose=False):
+        """Build an base class of Neural Recommender Systems
+        
+        Parameters
+        ----------
+        name: string
+            The name of the model
+        
+        trainable: bool
+            When False, the model is not trained    
+        
+        """
         self.name = name
         self.trainable = trainable
         self.verbose = verbose
@@ -37,7 +46,12 @@ class Base:
 
     @classmethod
     def _get_init_params(cls):
-        """Get initial parameters from the model constructor"""
+        """Get initial parameters from the model constructor
+        Parameters:
+        ----------
+        cls: Base class
+        
+        """
         init = getattr(cls.__init__, "deprecated_original", cls.__init__)
         if init is object.__init__:
             return []

@@ -3,12 +3,24 @@ import numpy as np
 from scipy.sparse import csr_matrix
 from scipy.sparse.linalg import svds
 
-class MatrixFactorization:        
+class MatrixFactorization:
+    """Matrix Factorization
+        from: Matrix Factorization Techniques for Recommender Systems
+
+    Parameters
+    ----------
+    train_df: pd.DataFrame, Training DataFrame, with columns = [pivot_index_name, pivot_columns_name, pivot_values_name]
+    svds_k: int, Hyperparameter K for svds
+    pivot_index_name: str, user columns name
+    pivot_columns_name: str, item columns name
+    pivot_values_name: str, rank columns name
+    """
     def __init__(self, train_df, svds_k,
                  pivot_index_name = "user",
                  pivot_columns_name = "item",
-                 pivot_values_name = "rate"                                  
+                 pivot_values_name = "rank"                                  
         ):
+        
         self.name = "MatrixFactorization"
         self.result_df = pd.DataFrame()
         self.svds_k = svds_k
@@ -40,7 +52,15 @@ class MatrixFactorization:
         self.result_df = pd.DataFrame(all_user_predicted_ratings_norm, columns=u_i_p_matrix_df.columns, 
                                 index=list(u_i_p_matrix_df.index)).transpose()
     
+    
     def rec_items(self, user, items_to_ignore=[], topn=10):
+        """recommender items by user's id
+        Parameters
+        ----------
+        user: str, user's id.
+        items_to_ignore: list, list of items which you want to ignore.
+        topn: int, The number of items you want to recommend.
+        """
         sorted_user_preds = self.result_df[user].sort_values(ascending=False).reset_index() \
             .rename(columns={user:self.pivot_values})
         

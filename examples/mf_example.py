@@ -5,8 +5,9 @@ import recs
 from recs.utils import predict_ranking
 from recs.models.mf import MatrixFactorization
 
+
 data = "DATA放這裡"
-train_set = recs.datasets.Dataset.from_uir(data, seed=41)
+
 
 user, item, rate = [], [], []
 

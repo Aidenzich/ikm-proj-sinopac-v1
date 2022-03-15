@@ -8,6 +8,8 @@ from ...utils.config import *
 
 torch.set_default_dtype(torch.float32)
 
+
+# Available Activation functions
 ACT = {
     "sigmoid": nn.Sigmoid(),
     "tanh": nn.Tanh(),
