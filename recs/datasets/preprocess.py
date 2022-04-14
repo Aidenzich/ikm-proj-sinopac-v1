@@ -19,7 +19,7 @@ def trans_buy():
     trans_buy_path = DATA_PATH / "origin/trans_buy.csv"    
     save_path = DATA_PATH / "trans_buy.pkl"
     
-    trans_buy = pd.read_csv(trans_buy_path)
+    trans_buy = pd.read_csv(trans_buy_path, header=None)
     trans_buy.columns = [
         USER_ID, 'certificate', ITEM_ID, 
         'buy_date','deduction_num', 'deduction_local_amount'
@@ -48,7 +48,7 @@ def crm(
     crm_path = DATA_PATH / 'origin/crm.csv'
     save_path = DATA_PATH / 'crm.pkl'
     
-    crm = pd.read_csv(crm_path, encoding="Big5")
+    crm = pd.read_csv(crm_path, encoding="Big5", header=None)
     crm.info(memory_usage='deep')
     crm.columns = [
         'yyyymm', 'id_number', 'local_foreign_total', 'local_total', 'local_demand_deposit',     
@@ -127,7 +127,7 @@ def equity():
     equity_path = DATA_PATH / 'origin/fund_equity.csv'
     fund_info_path = DATA_PATH / 'fund_info.pkl'
     
-    equity = pd.read_csv(equity_path)
+    equity = pd.read_csv(equity_path, header=None)
     fund_info = pd.read_pickle(fund_info_path)
 
     i2idx = readjson2dict("fund_info_idx")
@@ -203,7 +203,7 @@ def fund():
     idx_save_path = DATA_PATH / 'fund_info_idx.json'
     save_path = DATA_PATH / 'fund_info.pkl'
     
-    fund_info = pd.read_csv(fund_info_path, encoding='Big5')
+    fund_info = pd.read_csv(fund_info_path, encoding='Big5', header=None)
     fund_info.columns = [
         ITEM_ID, 'chinese_name', 'region',
         'fund_type', 'AUM', 'local_or_foreign',

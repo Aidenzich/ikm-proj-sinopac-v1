@@ -1,3 +1,4 @@
+#%%
 import __init__
 import recs
 import pandas as pd
@@ -48,7 +49,12 @@ vaecf = recs.models.VAECF(
 
 vaecf.fit(train_set)
 
-df = pd.DataFrame(columns=['userId', 'itemId', 'rank'], data=data)
-pred = predict_ranking(vaecf, df, 'userId', 'itemId', 'rank', True)
+df = pd.DataFrame(columns=['userId', 'itemId', 'rating'], data=data)
+pred = predict_ranking(vaecf, df, 'userId', 'itemId', 'rating', True)
 
 print(pred)
+# %%
+pred
+# %%
+df
+# %%

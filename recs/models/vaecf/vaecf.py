@@ -86,7 +86,10 @@ class VAE(nn.Module):
         ll = ll_choices.get(self.likelihood, None)
         if ll is None:
             raise ValueError("Only supported likelihoods: {}".format(ll_choices.keys()))
-
+        
+        # mult: ll = torch.sum( (x * torch.log(x_ + EPS)), dim=1 ) 
+        # bern: ll = torch.sum( (x * torch.log(x_ + EPS) + (1 - x) * torch.log(1 - x_ + EPS)), dim=1)
+        # gaus: ll = 
         ll = torch.sum(ll, dim=1)
 
         # KL term
