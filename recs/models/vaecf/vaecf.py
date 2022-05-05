@@ -82,7 +82,7 @@ class VAE(nn.Module):
             "gaus": -(x - x_) ** 2,
             "pois": x * torch.log(x_ + EPS) - x_,
         }
-
+        
         ll = ll_choices.get(self.likelihood, None)
         if ll is None:
             raise ValueError("Only supported likelihoods: {}".format(ll_choices.keys()))

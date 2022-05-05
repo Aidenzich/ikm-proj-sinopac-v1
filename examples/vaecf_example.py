@@ -32,7 +32,9 @@ data = cornac.datasets.movielens.load_feedback()
 
 
 train_set = recs.datasets.Dataset.from_uir(data, seed=41)
-
+print(train_set.num_items)
+print(train_set.num_users)
+#%%
 vaecf = recs.models.VAECF(
     k=10,
     autoencoder_structure=[20],
@@ -54,7 +56,11 @@ pred = predict_ranking(vaecf, df, 'userId', 'itemId', 'rating', True)
 
 print(pred)
 # %%
-pred
+pred.shape
+
+# %%
+pred[pred.userId == '196'].rating.tolist()
+
 # %%
 df
 # %%

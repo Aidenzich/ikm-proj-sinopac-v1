@@ -137,6 +137,7 @@ class VAECF(Base):
             z_u, _ = self.vae.encode(
                 torch.tensor(x_u.A, dtype=torch.float32, device=self.device)
             )
+            
             known_item_scores = self.vae.decode(z_u).data.cpu().numpy().flatten()
 
             return known_item_scores

@@ -9,7 +9,6 @@ from sklearn import preprocessing
 
 from . import *
 from ..utils.path import *
-from ..utils.common import get_cat2id
 from ..utils.common import id2cat, get_cat2id
 from ..utils.common import readjson2dict
 from ..utils.config import *
@@ -39,12 +38,7 @@ def trans_buy():
     trans_buy.to_pickle(save_path)
     
 
-def crm(
-    cal_var: bool=True, 
-    predict_year: int=202012, 
-    normalize: bool = True,
-    group_age: bool = True
-    ):
+def crm(cal_var: bool=True, predict_year: int=202012, normalize: bool = True, group_age: bool = True ):
     crm_path = DATA_PATH / 'origin/crm.csv'
     save_path = DATA_PATH / 'crm.pkl'
     
@@ -56,8 +50,6 @@ def crm(
         'foreign_demand_deposit', 'invest_type', 'age', 'monthly_trade_vol',
         'stock_inventory_val', 'KPI'
     ]
-
-
 
     # The target user exist in predict year
     predict_users = crm[crm.yyyymm == predict_year][USER_ID].unique()
@@ -76,7 +68,6 @@ def crm(
             'monthly_trade_vol', 'stock_inventory_val'
         ]
 
-        norm_cols = norm_cols + list(rename_dict.values())
 
         for i in norm_cols:
             crm[i] = np.log(crm[i].replace(0,1))
@@ -100,8 +91,6 @@ def crm(
             tmp = user_df[diff_cols].diff().replace(np.nan, 0).rename(rename_dict, axis=1)
             diff_df = diff_df.append(tmp)
             
-            break
-            
         crm = pd.concat([crm, diff_df], axis=1)
         
     if group_age:
@@ -117,11 +106,8 @@ def crm(
     
     with open(idx_save_path, 'w') as f:
         json.dump(u2idx, f)
-    
-    
     crm.to_pickle(save_path)
-    
-    
+
 def equity():
     # load path
     equity_path = DATA_PATH / 'origin/fund_equity.csv'
