@@ -3,6 +3,7 @@ from turtle import Turtle
 import pandas as pd
 from . import *
 from ..utils.path import *
+from ..utils.config import *
 from ..models.mf import MatrixFactorization
 
 

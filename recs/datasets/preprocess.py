@@ -15,6 +15,7 @@ from ..utils.config import *
 
 
 def trans_buy():
+    """原始資料 trans_buy.csv轉trans_buy.pkl"""
     trans_buy_path = DATA_PATH / "origin/trans_buy.csv"    
     save_path = DATA_PATH / "trans_buy.pkl"
     
@@ -38,7 +39,8 @@ def trans_buy():
     trans_buy.to_pickle(save_path)
     
 
-def crm(cal_var: bool=True, predict_year: int=202012, normalize: bool = True, group_age: bool = True ):
+def crm(cal_var: bool=True, predict_year: int=202012, normalize: bool=True, group_age: bool=True ):
+    # crm.csv
     crm_path = DATA_PATH / 'origin/crm.csv'
     save_path = DATA_PATH / 'crm.pkl'
     
@@ -222,3 +224,43 @@ def fund():
     
     with open(idx_save_path, 'w') as f:
         json.dump(i2idx, f)
+        
+def crm_new(savename="crm_for_clustering_2020.csv"):
+    crm_new = pd.read_csv("crm_new.csv", encoding="big5")
+    crm_non_trade = pd.read_csv("fund_crm_feature.csv", encoding="big5")
+    crm_non_trade.columns = crm_non_trade.columns.str.replace('YYYYMM', 'yyyymm')    
+    
+    # 僅保留 crm_new 與 fund_crm_featrue 資料表中的共有欄位
+    crm_intersec_col = list(set(crm_new.columns) & set(crm_non_trade.columns)) 
+    crm_new = crm_new[crm_intersec_col]
+    crm_new['has_traded'] = 1
+    
+    crm_non_trade = crm_non_trade[crm_intersec_col]
+    crm_non_trade['has_traded'] = 0
+    
+    crm_for_clustering = pd.concat([crm_new, crm_non_trade]).reset_index()
+    crm_non_trade.columns = crm_non_trade.columns.str.replace('身分證字號', 'id_number')
+    
+    
+    # 此處欄位請隨輸入資料調整
+    norm_numerical_col = []
+    numerical_col = []
+    multi_category_col = []
+    special_col = []
+    unique_col = []
+    useless_col = [] # 無用處的欄位，值都一樣
+    
+    crm_for_clustering.drop(useless_col, axis=1, inplace=True)
+    crm_for_clustering.fillna(0, inplace=True)
+    
+    for i in norm_numerical_col:
+        if i in crm_for_clustering.columns:
+            crm_for_clustering[i] = np.log(crm_for_clustering[i].replace(0,1))
+            
+    crm_for_clustering = pd.get_dummies(crm_for_clustering, columns=multi_category_col)
+    crm_for_clustering = crm_for_clustering.replace(-np.inf, -1)
+    
+    crm_for_clustering.to_csv(savename, index=False)
+    
+    
+    
