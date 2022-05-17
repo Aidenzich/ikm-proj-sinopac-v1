@@ -239,7 +239,7 @@ def crm_new(savename="crm_for_clustering_2020.csv"):
     crm_non_trade['has_traded'] = 0
     
     crm_for_clustering = pd.concat([crm_new, crm_non_trade]).reset_index()
-    crm_non_trade.columns = crm_non_trade.columns.str.replace('身分證字號', 'id_number')
+    crm_non_trade.columns = crm_non_trade.columns.str.replace('身分證字號', 'id_number')  # 把身分證字號轉 id_number，確保與其他資料表一致
     
     
     # 此處欄位請隨輸入資料調整
