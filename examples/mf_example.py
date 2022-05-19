@@ -6,9 +6,7 @@ from recs.utils import predict_ranking
 from recs.models.mf import MatrixFactorization
 
 
-data = "DATA放這裡"
-
-
+data = ...
 user, item, rate = [], [], []
 
 for i in data:
