@@ -1,9 +1,8 @@
 import numpy as np
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 from tqdm.auto import trange
-from ...utils.config import *
+from ...utils.config import EPS
 
 
 torch.set_default_dtype(torch.float32)
@@ -18,12 +17,13 @@ ACT = {
     "relu6": nn.ReLU6(),
 }
 
+
 class VAE(nn.Module):
     def __init__(
-        self, 
-        z_dim, 
-        ae_structure, 
-        activation_function, 
+        self,
+        z_dim,
+        ae_structure,
+        activation_function,
         likelihood
     ):
         super(VAE, self).__init__()
@@ -31,15 +31,18 @@ class VAE(nn.Module):
         self.likelihood = likelihood
         self.activation_function = ACT.get(activation_function, None)
         if self.activation_function is None:
-            raise ValueError("Supported activation_function: {}".format(ACT.keys()))
+            raise ValueError("Supported activation_function: {}".format(
+                ACT.keys()))
 
         # Encoder
         self.encoder = nn.Sequential()
         for i in range(len(ae_structure) - 1):
             self.encoder.add_module(
-                "fc{}".format(i), nn.Linear(ae_structure[i], ae_structure[i + 1])
+                "fc{}".format(i), nn.Linear(ae_structure[i],
+                                            ae_structure[i + 1])
             )
-            self.encoder.add_module("act{}".format(i), self.activation_function)
+            self.encoder.add_module("act{}".format(i),
+                                    self.activation_function)
         self.enc_mu = nn.Linear(ae_structure[-1], z_dim)  # mu
         self.enc_logvar = nn.Linear(ae_structure[-1], z_dim)  # logvar
 
@@ -48,10 +51,12 @@ class VAE(nn.Module):
         self.decoder = nn.Sequential()
         for i in range(len(ae_structure) - 1):
             self.decoder.add_module(
-                "fc{}".format(i), nn.Linear(ae_structure[i], ae_structure[i + 1])
+                "fc{}".format(i), nn.Linear(ae_structure[i],
+                                            ae_structure[i + 1])
             )
             if i != len(ae_structure) - 2:
-                self.decoder.add_module("act{}".format(i), self.activation_function)
+                self.decoder.add_module("act{}".format(i),
+                                        self.activation_function)
 
     def encode(self, x):
         h = self.encoder(x)
@@ -78,27 +83,25 @@ class VAE(nn.Module):
         # Likelihood
         ll_choices = {
             "mult": x * torch.log(x_ + EPS),
-            "bern": x * torch.log(x_ + EPS) + (1 - x) * torch.log(1 - x_ + EPS),
+            "bern": (x * torch.log(x_ + EPS) +
+                     (1 - x) * torch.log(1 - x_ + EPS)),
             "gaus": -(x - x_) ** 2,
             "pois": x * torch.log(x_ + EPS) - x_,
         }
-        
+
         ll = ll_choices.get(self.likelihood, None)
         if ll is None:
-            raise ValueError("Only supported likelihoods: {}".format(ll_choices.keys()))
-        
-        # mult: ll = torch.sum( (x * torch.log(x_ + EPS)), dim=1 ) 
-        # bern: ll = torch.sum( (x * torch.log(x_ + EPS) + (1 - x) * torch.log(1 - x_ + EPS)), dim=1)
-        # gaus: ll = 
+            raise ValueError("Only supported likelihoods: {}".format(
+                ll_choices.keys()))
+
         ll = torch.sum(ll, dim=1)
 
         # KL term
         std = torch.exp(0.5 * logvar)
         kld = -0.5 * (1 + 2.0 * torch.log(std) - mu.pow(2) - std.pow(2))
         kld = torch.sum(kld, dim=1)
-        
+
         return torch.mean(beta * kld - ll)
-        
 
 
 def learn(
@@ -128,7 +131,7 @@ def learn(
             u_batch_, mu, logvar = vae(u_batch)
 
             loss = vae.loss(u_batch, u_batch_, mu, logvar, beta)
-            
+
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()

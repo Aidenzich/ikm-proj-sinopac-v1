@@ -6,50 +6,55 @@ from .vaecf import VAE, learn
 
 class VAECF(Base):
     """Variational Autoencoder for Collaborative Filtering.
-        from: Liang, Dawen, Rahul G. Krishnan, Matthew D. Hoffman, and Tony Jebara. "Variational autoencoders for collaborative filtering."
-        
-        
+        from: Liang, Dawen,
+        Rahul G. Krishnan,
+        Matthew D. Hoffman,
+        and Tony Jebara.
+        "Variational autoencoders for collaborative filtering."
+
+
     Parameters
     ----------
     k: int, optional, default: 10
         The dimension of the stochastic user factors.
-        
+
     autoencoder_structure: list
          The number of neurons of encoder/decoder layer for VAE.
-         
+
     act_fn: str
-        Name of the activation function used between hidden layers of the auto-encoder.
-        
+        Name of the activation function used between hidden layers
+        of the auto-encoder.
+
     likelihood: str
         mult: Multinomial likelihood
         bern: Bernoulli likelihood
         gaus: Gaussian likelihood
         pois: Poisson likelihood
-    
+
     n_epochs: int
         The number of epochs
-        
+
     batch_size: int
         Batch Size
-        
+
     learning_rate: float
         Learning Rate
-        
+
     beta: float
         The weight of the KL term as in beta-VAE.
-        
+
     name:
         The name of the model
-        
+
     trainable:
         When False, the model is not trained.
-        
+
     verbose: boolean
         When True, display running logs.
-        
+
     seed: int
         Random seed
-        
+
     use_gpu: boolean
         Use Cuda or not.
     """
@@ -137,12 +142,14 @@ class VAECF(Base):
             z_u, _ = self.vae.encode(
                 torch.tensor(x_u.A, dtype=torch.float32, device=self.device)
             )
-            
-            known_item_scores = self.vae.decode(z_u).data.cpu().numpy().flatten()
+
+            known_item_scores = self.vae.decode(z_u).data.cpu().numpy().\
+                flatten()
 
             return known_item_scores
         else:
-            if self.train_set.is_unknown_user(user_idx) or self.train_set.is_unknown_item(
+            if self.train_set.is_unknown_user(user_idx) or self.train_set.\
+                is_unknown_item(
                 item_idx
             ):
                 raise Exception(
@@ -158,5 +165,5 @@ class VAECF(Base):
             user_pred = (
                 self.vae.decode(z_u).data.cpu().numpy().flatten()[item_idx]
             )
-            
+
             return user_pred

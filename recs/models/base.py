@@ -5,27 +5,28 @@ import pickle
 from glob import glob
 from datetime import datetime
 import numpy as np
-from ..utils.common import clip 
+from ..utils.common import clip
+
 
 class Base:
 
     def __init__(self, name, trainable=True, verbose=False):
         """Build an base class of Neural Recommender Systems
-        
+
         Parameters
         ----------
         name: string
             The name of the model
-        
+
         trainable: bool
-            When False, the model is not trained    
-        
+            When False, the model is not trained
+
         """
         self.name = name
         self.trainable = trainable
         self.verbose = verbose
         self.train_set = None
-        self.val_set = None        
+        self.val_set = None
         self.ignored_attrs = ["train_set", "val_set"]
 
     def reset_info(self):
@@ -50,14 +51,15 @@ class Base:
         Parameters:
         ----------
         cls: Base class
-        
+
         """
         init = getattr(cls.__init__, "deprecated_original", cls.__init__)
         if init is object.__init__:
             return []
 
         init_signature = inspect.signature(init)
-        parameters = [p for p in init_signature.parameters.values() if p.name != "self"]
+        parameters = [p for p in init_signature.parameters.values()
+                      if (p.name != "self")]
 
         return sorted([p.name for p in parameters])
 
@@ -67,7 +69,9 @@ class Base:
         new_params = {} if new_params is None else new_params
         init_params = {}
         for name in self._get_init_params():
-            init_params[name] = new_params.get(name, copy.deepcopy(getattr(self, name)))
+            init_params[name] = new_params.get(name,
+                                               copy.deepcopy(
+                                                   getattr(self, name)))
 
         return self.__class__(**init_params)
 
@@ -85,7 +89,8 @@ class Base:
         saved_model = copy.deepcopy(self)
 
         pickle.dump(
-            saved_model, open(model_file, "wb"), protocol=pickle.HIGHEST_PROTOCOL
+            saved_model, open(model_file, "wb"),
+            protocol=pickle.HIGHEST_PROTOCOL
         )
 
         if self.verbose:
@@ -117,7 +122,8 @@ class Base:
     def score(self, user_idx, item_idx=None):
         """Predict the scores/ratings of a user for an item.
         """
-        raise NotImplementedError("The algorithm is not able to make score prediction!")
+        raise NotImplementedError(
+            "The algorithm is not able to make score prediction!")
 
     def rate(self, user_idx, item_idx, clipping=True):
         """Give a rating score between pair of user and item

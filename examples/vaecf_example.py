@@ -1,16 +1,17 @@
-#%%
-import __init__
+# %%
+# import sys
+# sys.path.append('./')
+# sys.path.append('../')
+# sys.path.append('../../')
 import recs
 import pandas as pd
-from recs.utils.path import DATA_PATH
-from recs.utils.common import predict_ranking, readjson2dict
-import cornac
+from recs.utils.common import predict_ranking
 
 data = ...
 train_set = recs.datasets.Dataset.from_uir(data, seed=41)
 print(train_set.num_items)
 print(train_set.num_users)
-#%%
+# %%
 vaecf = recs.models.VAECF(
     k=10,
     autoencoder_structure=[20],

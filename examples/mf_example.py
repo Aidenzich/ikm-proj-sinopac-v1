@@ -1,8 +1,9 @@
+# import sys
+# sys.path.append('./')
+# sys.path.append('../')
+# sys.path.append('../../')
 from tqdm import tqdm
 import pandas as pd
-import __init__
-import recs
-from recs.utils import predict_ranking
 from recs.models.mf import MatrixFactorization
 
 
@@ -13,7 +14,7 @@ for i in data:
     user.append(i[0])
     item.append(i[1])
     rate.append(i[2])
-    
+
 
 df = pd.DataFrame({
     "user": user,
@@ -23,7 +24,7 @@ df = pd.DataFrame({
 df.drop_duplicates(inplace=True)
 
 
-MF = MatrixFactorization(df, svds_k = 15)
+MF = MatrixFactorization(df, svds_k=15)
 
 for u in tqdm(set(user)):
     MF.rec_items(u)[MF.pivot_columns].tolist()
