@@ -3,63 +3,21 @@
 ```
 .
 ├── .gitignore
-├── NEW_COLUMNS.MD
 ├── README.md
 ├── examples
-│   ├── __init__.py
 │   ├── mf_example.py
-│   ├── ncf_example.py
 │   └── vaecf_example.py
 ├── experience
-│   ├── classifier
-│   │   ├── ClassifiersResult.ipynb
-│   │   ├── ClassifiersTest-Copy1.ipynb
-│   │   ├── ClassifiersTest-Copy2.ipynb
-│   │   ├── ClassifiersTest-Copy3.ipynb
-│   │   ├── ClassifiersTest-Copy4.ipynb
-│   │   ├── ClassifiersTest-Copy5.ipynb
-│   │   ├── ClassifiersTest-xgboost.ipynb
-│   │   ├── ClassifiersTest.ipynb
-│   │   └── model_with_diff.ipynb
 │   ├── cluster
-│   │   ├── Untitled.ipynb
-│   │   ├── cluster_pred.py
-│   │   ├── exp1.ipynb
-│   │   ├── exp2.ipynb
-│   │   ├── exp3.ipynb
-│   │   ├── exp4.ipynb
-│   │   ├── exp5_nontrade.ipynb
-│   │   └── explain.ipynb
 │   ├── collaborative_filtering
-│   │   ├── MFResult.ipynb
-│   │   ├── MFTest.ipynb
-│   │   ├── do_cf_group.ipynb
-│   │   ├── mf_prob.ipynb
-│   │   ├── mf_prob_history.ipynb
-│   │   └── mf_torch.ipynb
-│   ├── mf_example.ipynb
 │   └── others
-│       ├── SMOTE-Scatter.ipynb
-│       ├── best_sell_cover_rate.ipynb
-│       ├── merge_by_yyyymm.py
-│       ├── result_json2csv.ipynb
-│       ├── shap.ipynb
-│       ├── trans_sell_analysis.ipynb
-│       └── trans_stock_analysis.ipynb
 ├── img
 │   └── MF_pred.png
-├── log
-│   ├── history-log.json
-│   ├── k-log.json
-│   ├── log.json
-│   └── model_score_log
 └── recs
     ├── __init__.py
     ├── backtest.py
-    ├── clf.py
     ├── datasets
     │   ├── __init__.py
-    │   ├── attribution.py
     │   ├── base.py
     │   └── preprocess.py
     ├── metrics
@@ -67,6 +25,11 @@
     ├── models
     │   ├── __init__.py
     │   ├── base.py
+    │   ├── cluster
+    │   │   ├── __init__.py
+    │   │   └── clustering.py
+    │   ├── explain
+    │   │   └── explain.py
     │   ├── mf
     │   │   ├── __init__.py
     │   │   └── mf.py
