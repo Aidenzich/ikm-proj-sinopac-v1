@@ -1,14 +1,16 @@
 # %%
-# import sys
-# sys.path.append('./')
-# sys.path.append('../')
-# sys.path.append('../../')
+import sys
+sys.path.append('./')
+sys.path.append('../')
+sys.path.append('../../')
 import recs
 import pandas as pd
 from recs.utils.common import predict_ranking
 
-data = ...
-train_set = recs.datasets.Dataset.from_uir(data, seed=41)
+data = pd.read_csv('../data/train.csv')
+data['rating'] = 1
+
+train_set = recs.datasets.Dataset.from_uir(data.values(), seed=41)
 print(train_set.num_items)
 print(train_set.num_users)
 # %%

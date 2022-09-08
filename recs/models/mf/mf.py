@@ -21,7 +21,7 @@ class MatrixFactorization:
     def __init__(self, train_df, svds_k,
                  pivot_index_name="user",
                  pivot_columns_name="item",
-                 pivot_values_name="rank"):
+                 pivot_values_name="prob"):
         self.name = "MatrixFactorization"
         self.result_df = pd.DataFrame()
         self.svds_k = svds_k
@@ -68,7 +68,7 @@ class MatrixFactorization:
         sorted_user_preds = self.result_df[user].sort_values(ascending=False)\
             .reset_index() \
             .rename(columns={user: self.pivot_values})
-
+        print(sorted_user_preds)
         ignore = sorted_user_preds[self.pivot_columns].isin(items_to_ignore)
         rec_df = sorted_user_preds[~ignore]\
             .sort_values(self.pivot_values, ascending=False).head(topn)
