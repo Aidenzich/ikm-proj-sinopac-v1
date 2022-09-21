@@ -116,7 +116,7 @@ class Dataset(object):
         ui_set = set()  # avoid duplicate observations
         dup_count = 0
 
-        for idx, (uid, iid, rating, *) in enumerate(data):
+        for idx, (uid, iid, rating, *_) in enumerate(data):
             if exclude_unknowns and (
                 uid not in global_uid_map or iid not in global_iid_map
             ):

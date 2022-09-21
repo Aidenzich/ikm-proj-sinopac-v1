@@ -7,6 +7,7 @@ import recs
 import pandas as pd
 from recs.utils.common import predict_ranking
 
+#%%
 data = pd.read_csv('../data/train.csv')
 data['rating'] = 1
 
