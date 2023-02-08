@@ -1,4 +1,7 @@
 # Sinopac Recsys 
+In this cooperative project with the bank, I integrated several state-of-the-art recommendation system algorithms to aid banks in enhancing their fund recommendation systems. I also suggested utilizing UMAP for dimensional reduction of user characteristic data and HDBSCAN for unsupervised clustering to effectively make recommendations to users even if they lack transaction records.
+
+
 ## Repository Structure
 ```
 .
